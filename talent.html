@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lagos Talent Network - Talent Registration</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <a href="index.html" class="back-home">← Back to Home</a>
+
+    <section class="registration">
+        <h1>Join Lagos Talent Network</h1>
+
+        <p>Showcase your talent and connect with companies.</p>
+
+        <form onsubmit="createTalent(event)">
+            <input type="text" placeholder="Full Name" required>
+            <input type="email" placeholder="Email Address" required>
+            <input type="text" placeholder="Your Skill" required>
+
+            <button type="submit">Create Talent Profile</button>
+        </form>
+    </section>
+<script>
+function createTalent(event) {
+    event.preventDefault();
+
+    alert("Talent profile created successfully! 🎉");
+
+    event.target.reset();
+}
+</script>
+</body>
+</html> 
