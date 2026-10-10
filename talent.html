@@ -23,14 +23,90 @@
             <button type="submit">Create Talent Profile</button>
         </form>
     </section>
+    
+
+
+<section class="talent-directory">
+    <h2>Registered Talents</h2>
+    <p id="talentCount">Registered Talents: 0</p>
+
+    <input
+        type="text"
+        id="talentSearch"
+        placeholder="Search by name or skill..."
+    >
+
+    <div id="talentList"></div>
+</section>
+
+
 <script>
+
 function createTalent(event) {
     event.preventDefault();
 
-    alert("Talent profile created successfully! 🎉");
+    const form = event.target;
+    const inputs = form.querySelectorAll("input");
 
-    event.target.reset();
+    const talent = {
+        name: inputs[0].value.trim(),
+        email: inputs[1].value.trim(),
+        skill: inputs[2].value.trim()
+    };
+
+    const talents = JSON.parse(
+        localStorage.getItem("talents") || "[]"
+    );
+
+    talents.push(talent);
+
+    localStorage.setItem("talents", JSON.stringify(talents));
+
+    alert("Talent profile saved successfully! 🎉");
+
+    form.reset();
 }
+function displayTalents() {
+    const talents = JSON.parse(
+        localStorage.getItem("talents") || "[]"
+    );
+
+    const talentList = document.getElementById("talentList");
+    
+
+
+    talentList.innerHTML = "";
+    document.getElementById("talentCount").textContent =
+    "Registered Talents: " + talents.length;
+
+    const searchInput = document.getElementById("talentSearch");
+const searchTerm = searchInput.value.toLowerCase().trim();
+
+const filteredTalents = talents.filter(function(talent) {
+    return talent.name.toLowerCase().includes(searchTerm) ||
+           talent.skill.toLowerCase().includes(searchTerm);
+});
+
+filteredTalents.forEach(function(talent) { 
+        const card = document.createElement("div");
+        card.className = "talent-card";
+
+        card.innerHTML = `
+            <h3>${talent.name}</h3>
+            <p>${talent.email}</p>
+            <p>Skill: ${talent.skill}</p>
+        `;
+ 
+        talentList.appendChild(card);
+    });
+        if (filteredTalents.length === 0) {
+        talentList.innerHTML = "<p>No talents found.</p>";
+    }
+}
+
+displayTalents();
+
+document.getElementById("talentSearch").addEventListener("input", displayTalents);
 </script>
 </body>
 </html> 

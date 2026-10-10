@@ -214,3 +214,100 @@ p {
     color: #111827;
     border: 2px solid #111827;
 } 
+
+/* Registered talent directory */
+.talent-directory {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 30px 20px;
+    text-align: center;
+}
+
+.talent-directory h2 {
+    font-size: 28px;
+    margin-bottom: 25px;
+    color: #26354a;
+}
+
+#talentList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+#talentList > div {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #e0e5ec;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    text-align: left;
+}
+
+#talentList h3 {
+    color: #26354a; 
+    font-size: 21px;
+    margin-bottom: 12px;
+}
+
+#talentList p {
+    color: #5b6573;
+    margin: 10px 0;
+    overflow-wrap: anywhere;
+}
+
+/* Professional Talent Profile Cards */
+.talent-card {
+    background: white;
+    padding: 25px;
+    margin: 20px auto;
+    max-width: 650px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border-left: 5px solid #2563eb;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.talent-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+}
+
+.talent-card h3 {
+    color: #1e3a8a;
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 22px;
+}
+
+.talent-card p {
+    color: #4b5563;
+    margin: 8px 0;
+    font-size: 16px;
+}
+
+/* Talent directory layout */
+.talent-directory {
+    padding: 30px 20px;
+}
+
+/* Arrange talent cards neatly */
+#talentList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+    align-items: start;
+}
+
+#talentCount {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #2563eb;
+    margin: 15px 0 20px;
+}
+
+
+
