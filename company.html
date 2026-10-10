@@ -27,12 +27,28 @@
 
     <script>
         function createCompany(event) {
-            event.preventDefault();
+    event.preventDefault();
 
-            alert("Company profile created successfully! 🎉");
+    const form = event.target;
 
-            event.target.reset();
-        }
+    const company = {
+        name: form.elements[0].value,
+        email: form.elements[1].value,
+        industry: form.elements[2].value
+    };
+
+    const companies = JSON.parse(
+        localStorage.getItem("companies") || "[]"
+    );
+
+    companies.push(company);
+
+    localStorage.setItem("companies", JSON.stringify(companies));
+
+    alert("Company profile saved successfully! 🎉");
+
+    form.reset();
+}
     </script>
 
 </body>
