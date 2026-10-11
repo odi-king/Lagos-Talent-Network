@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registered Companies | Lagos Talent Network</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <section class="registration">
+        <h1>Registered Companies</h1>
+        <h2 id="companyCount">Registered Companies: 0</h2>
+
+        <input
+            type="text"
+            id="companySearch"
+            placeholder="Search by company name or industry..."
+        >
+
+        <div id="companyList"></div>
+    </section>
+
+    <script>
+        const companyList = document.getElementById("companyList");
+        const companyCount = document.getElementById("companyCount");
+        const companySearch = document.getElementById("companySearch");
+
+        function displayCompanies() {
+            const companies = JSON.parse(
+                localStorage.getItem("companies") || "[]"
+            );
+
+            const search = companySearch.value.toLowerCase();
+
+            const filteredCompanies = companies.filter(company =>
+                (company.name || "").toLowerCase().includes(search) ||
+                (company.industry || "").toLowerCase().includes(search)
+            );
+
+            companyCount.textContent =
+                "Registered Companies: " + filteredCompanies.length;
+
+            companyList.replaceChildren();
+
+            if (filteredCompanies.length === 0) {
+                companyList.textContent = "No companies found.";
+                return;
+            }
+
+            filteredCompanies.forEach(company => {
+                const card = document.createElement("div");
+                card.className = "talent-card";
+
+                const name = document.createElement("h3");
+                name.textContent = company.name;
+
+                const industry = document.createElement("p");
+                industry.textContent = "Industry: " + company.industry;
+
+                card.append(name, industry);
+                companyList.appendChild(card);
+            });
+        }
+
+        companySearch.addEventListener("input", displayCompanies);
+        displayCompanies();
+    </script>
+
+</body>
+</html>
