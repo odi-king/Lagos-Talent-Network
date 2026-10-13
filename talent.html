@@ -2,111 +2,147 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lagos Talent Network - Talent Registration</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        // FIX 1: createClient (capital C), not createclient
+        const supabaseClient = window.supabase.createClient(
+            "https://suqmleonqxhijkddfkso.supabase.co",
+            "sb_publishable_pmoP0KdYsoF93ir6D9dm9Q_gTWWRxAD"
+        );
+    </script>
 </head>
 
-<body>
+<body> 
 
     <a href="index.html" class="back-home">← Back to Home</a>
 
     <section class="registration">
         <h1>Join Lagos Talent Network</h1>
-
         <p>Showcase your talent and connect with companies.</p>
 
         <form onsubmit="createTalent(event)">
             <input type="text" placeholder="Full Name" required>
             <input type="email" placeholder="Email Address" required>
             <input type="text" placeholder="Your Skill" required>
-
             <button type="submit">Create Talent Profile</button>
         </form>
     </section>
-    
 
+    <section class="talent-directory">
+        <h2>Registered Talents</h2>
+        <p id="talentCount">Registered Talents: 0</p>
 
-<section class="talent-directory">
-    <h2>Registered Talents</h2>
-    <p id="talentCount">Registered Talents: 0</p>
+        <input type="text" id="talentSearch" placeholder="Search by name or skill...">
 
-    <input
-        type="text"
-        id="talentSearch"
-        placeholder="Search by name or skill..."
-    >
-
-    <div id="talentList"></div>
-</section>
-
+        <div id="talentList"></div>
+    </section>
 
 <script>
+    let allTalents = [];
 
-function createTalent(event) {
-    event.preventDefault();
-
-    const form = event.target;
-    const inputs = form.querySelectorAll("input");
-
-    const talent = {
-        name: inputs[0].value.trim(),
-        email: inputs[1].value.trim(),
-        skill: inputs[2].value.trim()
-    };
-
-    const talents = JSON.parse(
-        localStorage.getItem("talents") || "[]"
-    );
-
-    talents.push(talent);
-
-    localStorage.setItem("talents", JSON.stringify(talents));
-
-    alert("Talent profile saved successfully! 🎉");
-
-    form.reset();
-}
-function displayTalents() {
-    const talents = JSON.parse(
-        localStorage.getItem("talents") || "[]"
-    );
-
-    const talentList = document.getElementById("talentList");
-    
-
-
-    talentList.innerHTML = "";
-    document.getElementById("talentCount").textContent =
-    "Registered Talents: " + talents.length;
-
-    const searchInput = document.getElementById("talentSearch");
-const searchTerm = searchInput.value.toLowerCase().trim();
-
-const filteredTalents = talents.filter(function(talent) {
-    return talent.name.toLowerCase().includes(searchTerm) ||
-           talent.skill.toLowerCase().includes(searchTerm);
-});
-
-filteredTalents.forEach(function(talent) { 
-        const card = document.createElement("div");
-        card.className = "talent-card";
-
-        card.innerHTML = `
-            <h3>${talent.name}</h3>
-            <p>${talent.email}</p>
-            <p>Skill: ${talent.skill}</p>
-        `;
- 
-        talentList.appendChild(card);
-    });
-        if (filteredTalents.length === 0) {
-        talentList.innerHTML = "<p>No talents found.</p>";
+    // FIX 5: escape user input before putting it in innerHTML
+    function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.textContent = text ?? "";
+        return div.innerHTML;
     }
-}
 
-displayTalents();
+    async function createTalent(event) {
+        event.preventDefault();
 
-document.getElementById("talentSearch").addEventListener("input", displayTalents);
+        const form = event.target;
+        const inputs = form.querySelectorAll("input");
+
+        const fullName = inputs[0].value.trim();
+        const email = inputs[1].value.trim();
+        const skill = inputs[2].value.trim();
+
+        if (!fullName || !email || !skill) {
+            alert("Please fill in all fields.");
+            return;
+        }
+
+        try {
+            const { error } = await supabaseClient
+                .from("talents")
+                .insert([{ full_name: fullName, email: email, skills: skill }]);
+
+            if (error) {
+                console.error("Supabase error:", error);
+                alert("Registration failed: " + error.message);
+                return;
+            }
+
+            alert("Talent profile created successfully!");
+            form.reset();
+
+            // FIX 4: refresh the list after a successful insert
+            await loadTalents();
+
+        } catch (err) {
+            console.error("Error:", err);
+            alert("Something went wrong. Please try again.");
+        }
+    }
+
+    // FIX 2: load talents from Supabase instead of localStorage
+    async function loadTalents() {
+        const { data, error } = await supabaseClient
+            .from("talents")
+            .select("*");
+
+        if (error) {
+            console.error("Load error:", error);
+            document.getElementById("talentList").innerHTML =
+                "<p>Could not load talents.</p>";
+            return;
+        }
+
+        allTalents = data || [];
+        displayTalents();
+    }
+
+    function displayTalents() {
+        const talentList = document.getElementById("talentList");
+        const searchTerm = document
+            .getElementById("talentSearch")
+            .value.toLowerCase()
+            .trim();
+
+        document.getElementById("talentCount").textContent =
+            "Registered Talents: " + allTalents.length;
+
+        // FIX 3: use the real column names (full_name, skills)
+        const filtered = allTalents.filter(function (talent) {
+            return (talent.full_name || "").toLowerCase().includes(searchTerm) ||
+                   (talent.skills || "").toLowerCase().includes(searchTerm);
+        });
+
+        talentList.innerHTML = "";
+
+        filtered.forEach(function (talent) {
+            const card = document.createElement("div");
+            card.className = "talent-card";
+            card.innerHTML = `
+                <h3>${escapeHtml(talent.full_name)}</h3>
+                <p>${escapeHtml(talent.email)}</p>
+                <p>Skill: ${escapeHtml(talent.skills)}</p>
+            `;
+            talentList.appendChild(card);
+        });
+
+        if (filtered.length === 0) {
+            talentList.innerHTML = "<p>No talents found.</p>";
+        }
+    }
+
+    document.getElementById("talentSearch").addEventListener("input", displayTalents);
+
+    loadTalents();
 </script>
 </body>
-</html> 
+</html>
