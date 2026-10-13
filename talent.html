@@ -66,10 +66,24 @@
             return;
         }
 
+        const { data: { user }, error: userError } =
+    await supabaseClient.auth.getUser();
+
+if (userError || !user) {
+    alert("Please log in before creating your talent profile.");
+    window.location.href = "login.html";
+    return;
+}
+
         try {
             const { error } = await supabaseClient
                 .from("talents")
-                .insert([{ full_name: fullName, email: email, skills: skill }]);
+                .insert([{
+                   user_id: user.id,
+                   full_name: fullName,
+                   email: email,
+                   skills: skill
+                }]); 
 
             if (error) {
                 console.error("Supabase error:", error);
