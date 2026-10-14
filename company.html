@@ -39,6 +39,14 @@
     <script>
         async function createCompany(event) {
             event.preventDefault();
+            const { data: { user }, error: userError } =
+    await supabaseClient.auth.getUser();
+
+if (userError || !user) {
+    alert("Please log in first.");
+    window.location.href = "login.html";
+    return;
+}
 
             const form = event.target;
 
