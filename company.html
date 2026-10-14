@@ -26,16 +26,30 @@
     </section>
 
     <script>
-        function createCompany(event) {
+        async function createCompany(event) {
     event.preventDefault();
 
     const form = event.target;
 
     const company = {
-        name: form.elements[0].value,
-        email: form.elements[1].value,
-        industry: form.elements[2].value
+        name: form.elements[0].value.trim(),
+        email: form.elements[1].value.trim(),
+        industry: form.elements[2].value.trim()
     };
+
+    const { error } = await supabaseClient
+        .from("companies")
+        .insert([company]);
+
+    if (error) {
+        alert("Registration failed: " + error.message);
+        console.error(error);
+        return;
+    }
+
+    alert("Company profile created successfully!");
+    form.reset();
+}
 
     const companies = JSON.parse(
         localStorage.getItem("companies") || "[]"
@@ -48,7 +62,7 @@
     alert("Company profile saved successfully! 🎉");
 
     form.reset();
-}
+
     </script>
 
 </body>
