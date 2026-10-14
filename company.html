@@ -6,6 +6,14 @@
     <title>Lagos Talent Network - Company Registration</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- FIX: this page was missing the Supabase connection -->
+    <script>
+        const supabaseClient = window.supabase.createClient(
+            "https://suqmleonqxhijkddfkso.supabase.co",
+            "sb_publishable_pmoP0KdYsoF93ir6D9dm9Q_gTWWRxAD"
+        );
+    </script>
 </head>
 
 <body>
@@ -28,35 +36,37 @@
 
     <script>
         async function createCompany(event) {
-    event.preventDefault();
+            event.preventDefault();
 
-    const form = event.target;
+            const form = event.target;
 
-    const company = {
-        name: form.elements[0].value.trim(),
-        email: form.elements[1].value.trim(),
-        industry: form.elements[2].value.trim()
-    };
+            const company = {
+                name: form.elements[0].value.trim(),
+                email: form.elements[1].value.trim(),
+                industry: form.elements[2].value.trim()
+            };
 
-    const { error } = await supabaseClient
-        .from("companies")
-        .insert([company]);
+            // FIX: try/catch so a crash shows an alert instead of failing silently
+            try {
+                const { error } = await supabaseClient
+                    .from("companies")
+                    .insert([company]);
 
-    if (error) {
-        alert("Registration failed: " + error.message);
-        console.error(error);
-        return;
-    }
+                if (error) {
+                    alert("Registration failed: " + error.message);
+                    console.error(error);
+                    return;
+                }
 
-    alert("Company profile created successfully!");
-    form.reset();
-}
+                alert("Company profile created successfully!");
+                form.reset();
 
-    
-
-    
-
+            } catch (err) {
+                console.error(err);
+                alert("Something went wrong. Please try again.");
+            }
+        }
     </script>
 
 </body>
-</html> 
+</html>
