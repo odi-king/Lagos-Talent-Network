@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registered Companies | Lagos Talent Network</title>
     <link rel="stylesheet" href="style.css">
+
+    <!-- FIX 2: load Supabase and create the connection -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseClient = window.supabase.createClient(
+            "https://suqmleonqxhijkddfkso.supabase.co",
+            "sb_publishable_pmoP0KdYsoF93ir6D9dm9Q_gTWWRxAD",
+            // No login on this site, so don't store a session
+            { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }
+        );
+    </script>
 </head>
 <body>
 
@@ -15,7 +26,7 @@
         <input
             type="text"
             id="companySearch"
-            placeholder="Search by company name or industry..."
+            placeholder="Search by company name, email or industry..."
         >
 
         <div id="companyList"></div>
@@ -26,20 +37,46 @@
         const companyCount = document.getElementById("companyCount");
         const companySearch = document.getElementById("companySearch");
 
+        // FIX 1: keep the companies in a variable outside the function
+        let companies = [];
+
+        // FIX 1: fetch the records from Supabase
+        async function loadCompanies() {
+            companyList.textContent = "Loading...";
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from("companies")
+                    .select("*");
+
+                if (error) {
+                    console.error("Load error:", error.message, error.code);
+                    companyList.textContent = "Could not load companies: " + error.message;
+                    return;
+                }
+
+                companies = data || [];
+                displayCompanies();
+
+            } catch (err) {
+                console.error(err);
+                companyList.textContent = "Something went wrong. Please try again.";
+            }
+        }
+
         function displayCompanies() {
-            const companies = JSON.parse(
-                localStorage.getItem("companies") || "[]"
-            );
+            const search = companySearch.value.toLowerCase().trim();
 
-            const search = companySearch.value.toLowerCase();
-
+            // FIX 3: search by email too
             const filteredCompanies = companies.filter(company =>
                 (company.name || "").toLowerCase().includes(search) ||
+                (company.email || "").toLowerCase().includes(search) ||
                 (company.industry || "").toLowerCase().includes(search)
             );
 
+            // Total registered (not just the filtered number)
             companyCount.textContent =
-                "Registered Companies: " + filteredCompanies.length;
+                "Registered Companies: " + companies.length;
 
             companyList.replaceChildren();
 
@@ -55,16 +92,20 @@
                 const name = document.createElement("h3");
                 name.textContent = company.name;
 
+                // FIX 3: show the email
+                const email = document.createElement("p");
+                email.textContent = company.email;
+
                 const industry = document.createElement("p");
                 industry.textContent = "Industry: " + company.industry;
 
-                card.append(name, industry);
+                card.append(name, email, industry);
                 companyList.appendChild(card);
             });
         }
 
         companySearch.addEventListener("input", displayCompanies);
-        displayCompanies();
+        loadCompanies();
     </script>
 
 </body>
