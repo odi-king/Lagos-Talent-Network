@@ -56,12 +56,32 @@
         }
 
         function viewProfile() {
-            window.location.href = "talent.html";
+            window.location.href = "talent.html?myprofile=true";
         }
 
-        function openSettings() {
-            alert("Account settings will be added next.");
-        }
+        async function openSettings() {
+    const newPassword = prompt(
+        "Enter your new password (at least 6 characters):"
+    );
+
+    if (!newPassword) return;
+
+    if (newPassword.length < 6) {
+        alert("Password must be at least 6 characters.");
+        return;
+    }
+
+    const { error } = await supabaseClient.auth.updateUser({
+        password: newPassword
+    });
+
+    if (error) {
+        alert("Password update failed: " + error.message);
+        return;
+    }
+
+    alert("Your password has been updated successfully.");
+}
 
         async function logoutUser() {
             const { error } = await supabaseClient.auth.signOut();
