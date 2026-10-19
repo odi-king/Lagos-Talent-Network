@@ -182,6 +182,8 @@ p {
     color: white;
     font-size: 16px;
     cursor: pointer;
+    width: 100%;
+    margin-top: 5px;
 }
 .back-home {
     display: inline-block;
@@ -467,6 +469,36 @@ body {
     border-color: #1d4ed8;
     color: #ffffff;
     transform: translateY(-2px);
+}
+.settings-menu {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.settings-menu button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#settingsOptions {
+    margin-top: 8px;
+    padding: 8px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#settingsOptions[hidden] {
+    display: none;
+}
+
+#settingsOptions button {
+    width: 100%;
 }
 
 

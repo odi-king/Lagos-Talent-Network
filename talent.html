@@ -17,14 +17,22 @@
 </head>
 
 <body> 
+<div class="settings-menu">
+    <button type="button" onclick="document.getElementById('settingsOptions').hidden = !document.getElementById('settingsOptions').hidden">
+        ⚙️ Settings
+    </button>
 
+    <div id="settingsOptions" hidden>
+        <button type="button" onclick="logoutUser()">Log Out</button>
+    </div>
+</div>
     <a href="index.html" class="back-home">← Back to Home</a>
 
     <section class="registration">
         <h1>Join Lagos Talent Network</h1>
         <p>Showcase your talent and connect with companies.</p>
 
-        <form onsubmit="createTalent(event)">
+        
             <input type="text" placeholder="Full Name" required>
             <input type="email" placeholder="Email Address" required>
             <input type="text" placeholder="Your Skill" required>
@@ -157,6 +165,17 @@ if (userError || !user) {
     document.getElementById("talentSearch").addEventListener("input", displayTalents);
 
     loadTalents();
+    async function logoutUser() {
+    const { error } = await supabaseClient.auth.signOut();
+
+    if (error) {
+        alert("Logout failed: " + error.message);
+        return;
+    }
+
+    alert("You have logged out successfully.");
+    window.location.href = "login.html";
+}
 </script>
 </body>
 </html> 
