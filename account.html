@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account | Lagos Talent Network</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <a href="index.html" class="back-home">← Back to Home</a>
+
+    <section class="auth-box">
+        <h1>My Account</h1>
+        <p>Manage your Lagos Talent Network account.</p>
+
+        <div id="accountDetails">
+            <p>Loading your account...</p>
+        </div>
+
+        <button type="button" onclick="viewProfile()">
+            My Profile
+        </button>
+
+        <button type="button" onclick="openSettings()">
+            Settings
+        </button>
+
+        <button type="button" onclick="logoutUser()">
+            Log Out
+        </button>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseClient = window.supabase.createClient(
+            "https://suqmleonqxhijkddfkso.supabase.co",
+            "sb_publishable_pmoP0KdYsoF93ir6D9dm9Q_gTWWRxAD"
+        );
+
+        async function loadAccount() {
+            const { data: { user }, error } =
+                await supabaseClient.auth.getUser();
+
+            if (error || !user) {
+                alert("Please log in first.");
+                window.location.href = "login.html";
+                return;
+            }
+
+            document.getElementById("accountDetails").innerHTML = `
+                <p><strong>Email:</strong> ${user.email}</p>
+                <p><strong>Account status:</strong> Logged in</p>
+            `;
+        }
+
+        function viewProfile() {
+            window.location.href = "talent.html";
+        }
+
+        function openSettings() {
+            alert("Account settings will be added next.");
+        }
+
+        async function logoutUser() {
+            const { error } = await supabaseClient.auth.signOut();
+
+            if (error) {
+                alert("Logout failed: " + error.message);
+                return;
+            }
+
+            window.location.href = "login.html";
+        }
+
+        loadAccount();
+    </script>
+
+</body>
+</html>
